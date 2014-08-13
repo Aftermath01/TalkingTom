@@ -10,7 +10,17 @@ public class Mp3Helper implements Serializable{
 	private String mAuthor;
 	private String mAlbum;
 	private String mDuration;
+	private String mFilePath;
 	private boolean mIsChecked;
+	
+	
+	public String getFilePath() {
+		return mFilePath;
+	}
+	
+	public void setFilePath(String filePath) {
+		this.mFilePath = filePath;
+	}
 	
 	public String getAlbum() {
 		return mAlbum;
