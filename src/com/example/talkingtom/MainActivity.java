@@ -1,43 +1,37 @@
 package com.example.talkingtom;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.talkingtom.adapters.SongListViewAdapter;
 import com.example.talkingtom.helpers.Mp3Helper;
+import com.example.talkingtom.jsonparser.JSONParser;
 
 public class MainActivity extends Activity implements OnCheckedChangeListener {
 	
-	private String[] mEverything = {"*"};
 	private ListView songListView;
 	private List<Mp3Helper> mListOfMp3;
 	private Mp3Helper mMp3;
-	private List<String> mListOfCheckedMp3;
+	private List<Mp3Helper> mListOfCheckedMp3;
 	private Button mAddToPlaylistButton;
+	private EditText mPlaylistNameEditText;
+	private Context mContext;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,18 +51,23 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 			
 			@Override
 			public void onClick(View v) {
-				listAllSongs();
-				jsonParser();
-				readFile();
+				JSONParser jsonParse = new JSONParser(mListOfCheckedMp3, getPlaylistName());
+				PlaylistFileCreator playlistFile = new PlaylistFileCreator(jsonParse.constructJson(), mContext);
+				playlistFile.createPlaylist();
+				playlistFile.readPlaylist();
 			}
 		});
 	}
 	
 	private void listAllSongs(){
 		Cursor cursor;
+		
+		String[] mEverything = {"*"};
 		Uri allSongsUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
 		String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0 ";
+		
 		ContentResolver resolver = getContentResolver();
+		
 		cursor = resolver.query(allSongsUri, mEverything, selection, null, null);
 		
 		if (cursor != null){
@@ -76,7 +75,6 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 				do{
 					mListOfMp3.add(setMp3(cursor));
 				}while (cursor.moveToNext());
-				
 			}
 		}
 	}
@@ -86,7 +84,7 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 		int pos = songListView.getPositionForView(buttonView);
 		
 		if(isChecked == true){
-			mListOfCheckedMp3.add(mListOfMp3.get(pos).getFilePath());
+			mListOfCheckedMp3.add(mListOfMp3.get(pos));
 		}else {
 			mListOfCheckedMp3.remove(mListOfMp3.get(pos));
 		}
@@ -94,9 +92,12 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 	
 	private void initializeVariables(){
 		songListView = (ListView) findViewById(R.id.song_container_listView);
+		mPlaylistNameEditText = (EditText) findViewById(R.id.playlist_name_edittext);
+		
+		mContext = this;
 		
 		mListOfMp3 = new ArrayList<Mp3Helper>();
-		mListOfCheckedMp3 = new ArrayList<String>();
+		mListOfCheckedMp3 = new ArrayList<Mp3Helper>();
 		mAddToPlaylistButton = (Button) findViewById(R.id.add_to_playlist_Button);
 		
 	}
@@ -112,55 +113,20 @@ public class MainActivity extends Activity implements OnCheckedChangeListener {
 		return mp3;
 	}
 	
-	private void jsonParser(){
+	private String getPlaylistName(){
+		String playlistName = "";
 		
-		String fileName = "myfile";
-		
-		JSONArray jsonArray = new JSONArray(mListOfCheckedMp3);
-		
-		File file = new File(this.getFilesDir(), fileName);
-		try {
+		if(!mPlaylistNameEditText.getText().toString().isEmpty() && mPlaylistNameEditText != null){
+		    playlistName = mPlaylistNameEditText.getText().toString();
+			// TODO put the playlist name in here, when the class constructing the playlist is created ( pass it in the constructor along with the MP3Helper list );
 			
-			if(!file.exists()){
-				file.createNewFile();
-			}
-			
-			FileOutputStream fileOutStream = new FileOutputStream(file);
-			fileOutStream.write(jsonArray.toString().getBytes());
-			fileOutStream.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		}else{
+			Toast toast = new Toast(this);
+			toast.setText("There is no name entered for playlist");
+			toast.setDuration(Toast.LENGTH_LONG);
+			toast.show();
 		}
 		
-		
-//		Log.d("CheckForNull",String.valueOf(file.exists()));
-//		FileOutputStream outStream = new FileOutputStream(file);
-		
-	}
-	
-	private void readFile(){
-		String fileName = "myfile";
-		File file = new File(this.getFilesDir(), fileName);
-		StringBuilder text = new StringBuilder();
-		try {
-			
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			String line;
-			
-			while ((line = br.readLine()) != null) {
-		        text.append(line);
-		        text.append('\n');
-		    }
-			
-			Log.d("ReadingData", text.toString());
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		return playlistName;
 	}
 }

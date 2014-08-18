@@ -11,13 +11,19 @@
 	
         
     <ListView android:id="@+id/song_container_listView"
-        android:layout_width="wrap_content"	
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"	
+        android:layout_height="0dp"
         android:layout_weight="5"/>
+
+    <EditText android:id="@+id/playlist_name_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="@string/playlist_name_lable"/>
     
     <Button android:id="@+id/add_to_playlist_Button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:text="@string/add_to_playlist_button"
         android:layout_gravity="bottom|center"
         android:layout_weight="1"/>
