@@ -13,7 +13,6 @@ public class Mp3Helper implements Serializable{
 	private String mFilePath;
 	private boolean mIsChecked;
 	
-	
 	public String getFilePath() {
 		return mFilePath;
 	}

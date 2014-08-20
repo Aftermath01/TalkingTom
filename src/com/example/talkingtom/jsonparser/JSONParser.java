@@ -31,38 +31,40 @@ public class JSONParser {
 		mMp3List = new ArrayList<Mp3Helper>();
 	}
 	
-	public JSONArray constructJson(){
+	public JSONArray parseToJson(){
 		JSONArray outerJsonArr = new JSONArray();
 		JSONArray innerJsonArr;
-		outerJsonArr.put(mPlaylistName);
 		
-		for(Mp3Helper mp3 : mMp3List){
-			innerJsonArr = new JSONArray();
 			
-			mTitleJsonObj = new JSONObject();
-			mArtistJsonObj = new JSONObject();
-			mAlbumJsonObj = new JSONObject();
-			mDurationJsonObj = new JSONObject();
-			mPathJsonObj = new JSONObject();
+			outerJsonArr.put(mPlaylistName);
 			
-			try {
-				mTitleJsonObj.put(Utils.MP3_TITLE, mp3.getTitle());
-				mArtistJsonObj.put(Utils.MP3_ARTIS, mp3.getAuthor());
-				mAlbumJsonObj.put(Utils.MP3_ALBUM, mp3.getAlbum());
-				mDurationJsonObj.put(Utils.MP3_DURATION, mp3.getDuration());
-				mPathJsonObj.put(Utils.MP3_PATH, mp3.getFilePath());
+			for(Mp3Helper mp3 : mMp3List){
+				innerJsonArr = new JSONArray();
 				
-				innerJsonArr.put(mTitleJsonObj);
-				innerJsonArr.put(mArtistJsonObj);
-				innerJsonArr.put(mAlbumJsonObj);
-				innerJsonArr.put(mDurationJsonObj);
-				innerJsonArr.put(mPathJsonObj);
-			
-			} catch (JSONException e) {
-				e.printStackTrace();
+				mTitleJsonObj = new JSONObject();
+				mArtistJsonObj = new JSONObject();
+				mAlbumJsonObj = new JSONObject();
+				mDurationJsonObj = new JSONObject();
+				mPathJsonObj = new JSONObject();
+				
+				try {
+					mTitleJsonObj.put(Utils.MP3_TITLE, mp3.getTitle());
+					mArtistJsonObj.put(Utils.MP3_ARTIS, mp3.getAuthor());
+					mAlbumJsonObj.put(Utils.MP3_ALBUM, mp3.getAlbum());
+					mDurationJsonObj.put(Utils.MP3_DURATION, mp3.getDuration());
+					mPathJsonObj.put(Utils.MP3_PATH, mp3.getFilePath());
+					
+					innerJsonArr.put(mTitleJsonObj);
+					innerJsonArr.put(mArtistJsonObj);
+					innerJsonArr.put(mAlbumJsonObj);
+					innerJsonArr.put(mDurationJsonObj);
+					innerJsonArr.put(mPathJsonObj);
+				
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				outerJsonArr.put(innerJsonArr);
 			}
-			outerJsonArr.put(innerJsonArr);
-		}
 		
 		return outerJsonArr;
 	}
