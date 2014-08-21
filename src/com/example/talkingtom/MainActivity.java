@@ -11,6 +11,7 @@ import android.widget.Button;
 public class MainActivity extends Activity {
 
 	private Button mCreatePlaylistButton;
+	private Button mOpenMediaPlayer;
 	private Context mContext;
 	Intent mIntent;
 	
@@ -29,10 +30,20 @@ public class MainActivity extends Activity {
 				startActivity(mIntent);
 			}
 		});
+		
+		mOpenMediaPlayer.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mIntent = new Intent(mContext, PlayMusic.class);
+				startActivity(mIntent);
+			}
+		});
 	}
 
 	private void initializeVariables(){
 		mCreatePlaylistButton = (Button) findViewById(R.id.create_playlist_button);
+		mOpenMediaPlayer = (Button) findViewById(R.id.open_media_player);
 		mContext = this;
 	}
 }

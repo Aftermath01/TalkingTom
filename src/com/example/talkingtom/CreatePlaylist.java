@@ -53,8 +53,8 @@ public class CreatePlaylist extends Activity implements OnCheckedChangeListener 
 			public void onClick(View v) {
 				JSONParser jsonParse = new JSONParser(mListOfCheckedMp3, getPlaylistName());
 				PlaylistFileCreator playlistFile = new PlaylistFileCreator(jsonParse.parseToJson(), mContext);
-				playlistFile.createPlaylist();
-				playlistFile.readPlaylist();
+				playlistFile.createPlaylistFile();
+				playlistFile.readFile(getPlaylistName(), mContext);
 			}
 		});
 	}

@@ -20,6 +20,7 @@ public class PlaylistFileCreator {
 	private JSONArray mJsonArr;
 	private Context mContext;
 	private String mFileName;
+	private String mFileExtension = ".json";
 	
 	public PlaylistFileCreator(JSONArray jsonArr, Context context){
 		
@@ -27,10 +28,14 @@ public class PlaylistFileCreator {
 		mContext = context;
 	}
 	
-	public void createPlaylist(){
+	public PlaylistFileCreator(){
+		
+	}
+	
+	public void createPlaylistFile(){
 		
 		try {
-			mFileName = mJsonArr.getString(0);
+			mFileName = mJsonArr.getJSONObject(0).get(Utils.MP3_PLAYLIST_NAME) + mFileExtension;
 			Log.d("ReadingData", mFileName);
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
@@ -38,6 +43,7 @@ public class PlaylistFileCreator {
 		}
 		
 		File file = new File(mContext.getFilesDir(), mFileName);
+		Log.d("ReadingData", mContext.getFilesDir().toString());
 		try {
 			
 			if(!file.exists()){
@@ -53,9 +59,16 @@ public class PlaylistFileCreator {
 		}
 	}
 	
-	public void readPlaylist(){
-		String fileName = mFileName;
-		File file = new File(mContext.getFilesDir(), fileName);
+	public String readFile(String fileName, Context context){
+		
+		Log.d("ReadingFile", fileName);
+		
+		if(mContext != null){
+			context = mContext;
+		}
+		
+		File file = new File(context.getFilesDir(), fileName);
+		
 		StringBuilder text = new StringBuilder();
 		try {
 			
@@ -68,13 +81,13 @@ public class PlaylistFileCreator {
 		    }
 			
 			Log.d("ReadingData", text.toString());
+			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		return text.toString();
 	}
 }

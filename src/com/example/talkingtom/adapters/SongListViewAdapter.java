@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.example.talkingtom.MainActivity;
+import com.example.talkingtom.CreatePlaylist;
 import com.example.talkingtom.R;
 import com.example.talkingtom.helpers.Mp3Helper;
 
@@ -69,7 +69,7 @@ public class SongListViewAdapter extends ArrayAdapter{
 		
 		Log.d("CheckForNull", mSongList.get(position).getTitle());
 		
-		checkBox.setOnCheckedChangeListener( (MainActivity) mContext);
+		checkBox.setOnCheckedChangeListener( (CreatePlaylist) mContext);
 				
 		return view;
 	}
