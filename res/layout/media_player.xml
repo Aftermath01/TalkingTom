@@ -5,18 +5,28 @@
     android:orientation="vertical" 
     android:background="@drawable/background">
     
-	<ImageButton android:id="@+id/play_button"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:src="@drawable/play_button"
-	    android:contentDescription="@string/play_button"
-	    android:background="@null"
-	    android:layout_centerInParent="true"/>
-    
-    
-	<Button android:id="@+id/next_song_button"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:text="next"/>
+    <LinearLayout 	android:id="@+id/controls_container_llayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerInParent="true">
+	    
+        <Button android:id="@+id/backward_button"
+		    android:layout_width="43dp"
+		    android:layout_height="43dp"
+		    android:background="@drawable/button_backward"/>
+        
+		<Button android:id="@+id/play_button"
+		    android:layout_width="120dp"
+		    android:layout_height="120dp"
+		    android:contentDescription="@string/play_button"
+		    android:background="@drawable/button_play"/>
+		
+		<Button android:id="@+id/forward_button"
+		    android:layout_width="43dp"
+		    android:layout_height="43dp"
+		    android:background="@drawable/button_forward"/>
+		
+	</LinearLayout>
 	
 </RelativeLayout>

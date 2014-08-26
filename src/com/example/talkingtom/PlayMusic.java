@@ -6,36 +6,40 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
-import android.widget.ImageButton;
 
 import com.example.talkingtom.helpers.Mp3Helper;
 import com.example.talkingtom.jsonparser.JSONParser;
 
 public class PlayMusic extends Activity{
 
-	private ImageButton mPlayPauseSongButton;
+	private Button mPlayPauseSongButton;
 	private Button mNextSongButton;
+	private Button mPreviousSongButton;
+	
 	private List<Mp3Helper> mp3List;
 	private MediaPlayer mMediaPlyer;
 	private JSONParser readMp3List;
-	private int mSongCounter = 0;
+	private int mSongCounter;
 	private Uri contentUri;
-	private Context mContext;
 	
-	private boolean isMusicPlaying = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.media_player);
 		initializeVariables();
+		
+		//TODO Make a listview with all of the playlists available 
 		
 		mp3List = readMp3List.parseFromJson("hate.json", this);
 		
@@ -47,57 +51,50 @@ public class PlayMusic extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				
-				if(mMediaPlyer.isPlaying()){
-					mMediaPlyer.pause();
-				}else{
-					mMediaPlyer.start();
-				}
-				
+				playPauseButton();
 			}
 		});
-		
+	
 		mNextSongButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				
-				Log.d("Size", String.valueOf(mp3List.size()));
-				
-				mSongCounter++;
-				Log.d("Size", String.valueOf(mSongCounter));
-				if(mSongCounter == mp3List.size()){
-					mSongCounter = 0;
-					Log.d("Size", String.valueOf(mSongCounter));
-				}
-				
-				if(mMediaPlyer.isPlaying()){
-					startNextSong();
-					
-				}else{
-					nextSong();
-					
-				}
-				
+				nextSong();
 			}
 		} );
+		
+		mPreviousSongButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				previousSong();
+			}
+		});
+		
+		
 	}
-
 	
 	private void initializeVariables(){
-		mPlayPauseSongButton = (ImageButton) findViewById(R.id.play_button);
-		mNextSongButton = (Button) findViewById(R.id.next_song_button);
+		mPlayPauseSongButton = (Button) findViewById(R.id.play_button);
+		mNextSongButton = (Button) findViewById(R.id.forward_button);
+		mPreviousSongButton = (Button) findViewById(R.id.backward_button);
+		
 		mp3List = new ArrayList<Mp3Helper>();
 		readMp3List = new JSONParser();
-		mContext = this;
+		
+		mSongCounter = 0;
+		
 	}
 	
-	private void startNextSong(){
+	private void changeAndStartSong(){
 		mMediaPlyer.stop();
 		mMediaPlyer.reset();
+		
 		try {
+			
 			mMediaPlyer.setDataSource(mp3List.get(mSongCounter).getFilePath());
 			mMediaPlyer.prepare();
+			
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -109,12 +106,14 @@ public class PlayMusic extends Activity{
 		mMediaPlyer.start();
 	}
 	
-	private void nextSong(){
+	private void changeSong(){
 		
 		try {
+			
 			mMediaPlyer.reset();
 			mMediaPlyer.setDataSource(mp3List.get(mSongCounter).getFilePath());
 			mMediaPlyer.prepare();
+			
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -122,6 +121,51 @@ public class PlayMusic extends Activity{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
+	
+	private void nextSong(){
+		mSongCounter++;
+
+		if(mSongCounter == mp3List.size()){
+			mSongCounter = 0;
+		}
+		
+		if(mMediaPlyer.isPlaying()){
+			changeAndStartSong();
+			
+		}else{
+			changeSong();
+			
+		}
+	}
+	
+	private void previousSong(){
+		mSongCounter--;
+		
+		if(mSongCounter < 0){
+			mSongCounter = mp3List.size() - 1;
+		}
+		
+		if(mMediaPlyer.isPlaying()){
+			changeAndStartSong();
+		}else{
+			changeSong();
+		}
+	}
+	
+	private void playPauseButton(){
+		
+		Drawable resourcePlayButton =  getResources().getDrawable(R.drawable.button_play);
+		Drawable resourcePauseButton = getResources().getDrawable(R.drawable.button_pause);
+		
+		if(mMediaPlyer.isPlaying()){
+			Log.d("Boolean Test", "IN!!!!");
+			mMediaPlyer.pause();
+			mPlayPauseSongButton.setBackground(resourcePlayButton);
+		}else{
+			mMediaPlyer.start();
+			mPlayPauseSongButton.setBackground(resourcePauseButton);
+		}
+	}
+	
 }
