@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,11 +18,10 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.talkingtom.adapters.SongListViewAdapter;
 import com.example.talkingtom.helpers.Mp3Helper;
-import com.example.talkingtom.jsonparser.JSONParser;
+import com.example.talkingtom.helpers.PlaylistOptions;
 
 public class CreatePlaylist extends Activity implements OnCheckedChangeListener {
 	
@@ -47,16 +47,15 @@ public class CreatePlaylist extends Activity implements OnCheckedChangeListener 
 			songListView.setAdapter(arrayAdapter);
 		}
 		
+		
 		mAddToPlaylistButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				JSONParser jsonParse = new JSONParser(mListOfCheckedMp3, getPlaylistName());
-				PlaylistFileCreator playlistFile = new PlaylistFileCreator(jsonParse.parseToJson(), mContext);
-				playlistFile.createPlaylistFile();
-				playlistFile.readFile(getPlaylistName(), mContext);
+				addSongToPlaylist();
 			}
 		});
+		
 	}
 	
 	private void listAllSongs(){
@@ -106,8 +105,9 @@ public class CreatePlaylist extends Activity implements OnCheckedChangeListener 
 	private Mp3Helper setMp3(Cursor cursor){
 		Mp3Helper mp3 = new Mp3Helper();
 		
+		mp3.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
 		mp3.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-		mp3.setAuthor(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+		mp3.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
 		mp3.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
 		mp3.setDuration(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
 		mp3.setFilePath(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
@@ -121,15 +121,20 @@ public class CreatePlaylist extends Activity implements OnCheckedChangeListener 
 		
 		if(!mPlaylistNameEditText.getText().toString().isEmpty() && mPlaylistNameEditText != null){
 		    playlistName = mPlaylistNameEditText.getText().toString();
-			
-		}else{
-			Toast toast = new Toast(this);
-			toast.setText("There is no name entered for playlist");
-			toast.setDuration(Toast.LENGTH_LONG);
-			toast.show();
-			
 		}
 		
 		return playlistName;
+	}
+	
+	
+	private void addSongToPlaylist(){
+		
+		String testPlaylistName = getPlaylistName();
+		
+		PlaylistOptions mediaPlayer = new PlaylistOptions(getContentResolver());
+		
+		mediaPlayer.createPlaylist(testPlaylistName);
+		
+		mediaPlayer.addSongToPlaylist(testPlaylistName, mListOfCheckedMp3); 
 	}
 }

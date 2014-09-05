@@ -6,6 +6,7 @@ public class Mp3Helper implements Serializable{
 
 	private static final long serialVersionUID = -5278044766833441306L;
 
+	private String mId;
 	private String mTitle;
 	private String mAuthor;
 	private String mAlbum;
@@ -13,6 +14,14 @@ public class Mp3Helper implements Serializable{
 	private String mFilePath;
 	private String mPlaylistName;
 	private boolean mIsChecked;
+	
+	public String getId() {
+		return mId;
+	}
+
+	public void setId(String id) {
+		this.mId = id;
+	}
 	
 	public String getPlaylistName() {
 		return mPlaylistName;
@@ -46,7 +55,7 @@ public class Mp3Helper implements Serializable{
 	public String getAuthor() {
 		return mAuthor;
 	}
-	public void setAuthor(String author) {
+	public void setArtist(String author) {
 		this.mAuthor = author;
 	}
 	public String getDuration() {
